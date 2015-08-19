@@ -9,7 +9,7 @@ class Sof < Thor
     server_with_type_array = []
     options[:servers].each do |server_with_type_string|
       server_with_type = server_with_type_string.split(':')
-      raise Thor::Error, "#{server_with_type} is not in the ADDRESS:TYPE format" unless server_with_type.count > 1
+      raise Thor::Error, "#{server_with_type_string} is not in the ADDRESS:TYPE format" unless server_with_type.count == 2
       server_with_type_array << { server: server_with_type[0], type: server_with_type[1] }
     end
       # ADD OBJECT INITIATION HERE
