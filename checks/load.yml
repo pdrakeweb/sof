@@ -1,0 +1,5 @@
+name: load
+command: '/usr/lib/nagios/plugins/check_load -w 10,10,10 -c 10,10,10'
+category:
+  - base
+type: ssh
