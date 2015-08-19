@@ -1,20 +1,15 @@
 #!/usr/bin/env ruby
 require 'thor'
+require_relative '../lib/sof/manifest'
 
-class Sof < Thor
-    method_option :servers, required: true, type: :array, aliases: '-s', desc: 'Servers ADDRESS:TYPE'
-    method_option :port, required: true, type: :string, aliases: '-p', desc: 'SSH port'
+class SofCommand < Thor
+  method_option :manifest, required: true, type: :string, aliases: '-m', desc: 'specify manifest'
   desc 'check-server', 'Takes a list of servers (ADDRESS:TYPE) and a SSH port to check if they are on fire'
   def check_server
-    server_with_type_array = []
-    options[:servers].each do |server_with_type_string|
-      server_with_type = server_with_type_string.split(':')
-      raise Thor::Error, "#{server_with_type_string} is not in the ADDRESS:TYPE format" unless server_with_type.count == 2
-      server_with_type_array << { server: server_with_type[0], type: server_with_type[1] }
-    end
-      # ADD OBJECT INITIATION HERE
-      # ADD CALL TO OBJECT HERE
+    puts Sof::Manifest.get(options[:manifest])
+    rescue StandardError => e
+      raise Thor::Error, e.message
   end
 end
 
-Sof.start
+SofCommand.start
