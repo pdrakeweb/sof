@@ -1,0 +1,9 @@
+name: php_external_calls
+command: 'sudo lsof -a -iTCP -sTCP:ESTABLISHED -cphp -P -Fn | grep -v -E "^p|:3306\$|:11211\$"'
+expected_result: 1
+category:
+  - web
+type: ssh
+dependencies:
+  - ssh
+timeout: 5
