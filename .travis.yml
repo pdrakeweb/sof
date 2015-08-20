@@ -7,11 +7,10 @@ rvm:
   - "2.1.6"
   - ruby-head
 
-install: bundle install --local --path vendor/bundle/
+
+install: bundle install --path vendor/bundle/
 
 script:
-  # Make sure there are no syntax errors in any of the Ruby files
-  - "ruby tools/syntax_checker.rb"
   # Run all specs.
   - "bundle exec rspec"
 
