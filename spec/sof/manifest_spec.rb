@@ -49,7 +49,7 @@ module Sof
             expect(YAML).to receive(:load_file).with('some_path').and_return(@manifest)
             expect do
               described_class.get('some_path')
-            end.to raise_error(StandardError, 'Either no port found or bad format in manifest')
+            end.to raise_error(Sof::ManifestError, 'Either no port found or bad format in manifest')
           end
 
           it 'missing servers' do
@@ -57,7 +57,7 @@ module Sof
             expect(YAML).to receive(:load_file).with('some_path').and_return(@manifest)
             expect do
               described_class.get('some_path')
-            end.to raise_error(StandardError, 'Either no servers found or bad format in manifest')
+            end.to raise_error(Sof::ManifestError, 'Either no servers found or bad format in manifest')
           end
 
           it 'server missing a name' do
@@ -65,7 +65,7 @@ module Sof
             expect(YAML).to receive(:load_file).with('some_path').and_return(@manifest)
             expect do
               described_class.get('some_path')
-            end.to raise_error(StandardError, 'Either no name found or bad format in servers in manifest')
+            end.to raise_error(Sof::ManifestError, 'Either no name found or bad format in servers in manifest')
           end
         end
       end

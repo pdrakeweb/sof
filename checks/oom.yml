@@ -1,0 +1,7 @@
+name: oom
+command: 'grep "Out of memory: Kill process" /var/log/syslog'
+expected_result: 1
+category:
+  - base
+type: ssh
+sudo: root
