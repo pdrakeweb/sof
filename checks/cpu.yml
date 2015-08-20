@@ -1,0 +1,7 @@
+name: cpu
+command: '/usr/lib/nagios/plugins/check_cpu_stats -w 79,79,4  -c 80,80,5'
+category:
+  - base
+type: ssh
+dependencies:
+  - ssh
