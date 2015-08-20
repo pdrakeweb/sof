@@ -15,7 +15,7 @@ class Ssh < Sof::Check
   end
 
   def run(server)
-    ssh = Sof::Ssh.new(server)
+    ssh = Sof::Ssh.new(server, echo: @options[:debug])
     ssh_result = ssh.exec(command)
 
     case ssh_result[:exitstatus]

@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
+require 'rubygems'
+require 'bundler/setup'
+
 require 'thor'
+
 require_relative '../lib/sof'
 require_relative '../lib/sof/runner'
 require_relative '../lib/sof/manifest'
@@ -8,12 +12,13 @@ require_relative '../lib/sof/manifest'
 class SofCommand < Thor
   method_option :manifest, required: true, type: :string, aliases: '-m', desc: 'specify manifest'
   method_option :verbose, required: false, default: false, type: :boolean, aliases: '-v', desc: 'be verbose'
+  method_option :debug, required: false, default: false, type: :boolean, aliases: '-d', desc: 'output debugging'
   desc 'check-server', 'Takes a list of servers (ADDRESS:TYPE) and a SSH port to check if they are on fire'
   def check_server
     manifest = Sof::Manifest.get(options[:manifest])
-    sof = Sof::Runner.new(manifest)
+    sof = Sof::Runner.new(manifest, options)
     sof.run_checks
-    sof.output_results(options[:verbose])
+    sof.output_results
   end
 end
 
