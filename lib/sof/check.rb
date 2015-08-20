@@ -1,4 +1,3 @@
-require 'sof'
 require 'yaml'
 
 module Sof

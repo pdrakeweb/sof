@@ -1,29 +1,28 @@
-require 'sof/check'
-require 'sof/server'
-require 'sof/checks'
-
 module Sof
 class Runner
 
-  attr_accessor :server_concurrency, :check_concurrency
+  attr_accessor :server_concurrency, :check_concurrency, :manifest
 
-  def initialize
-    server_concurrency ||= 0
-    check_concurrency ||= 0
+  def initialize(manifest)
+    @server_concurrency ||= 2
+    @check_concurrency ||= 2
+    @manifest = manifest
   end
 
   def servers
-    (1..2).map{ Sof::Server.new }
+    manifest['servers'].map do |server_record|
+      server_record['username'] ||= manifest['username']
+      server_record['port'] ||= manifest['port']
+      Sof::Server.new(server_record)
+    end
   end
 
   def run_checks
     @results = []
     #Parallel.map_with_index(servers, :in_processes => server_concurrency, :progress => 'Running checks') do |server|
-    #result = Parallel.map_with_index(servers, :in_processes => server_concurrency) do |server|
-    result = servers.map do |server|
-      checks = Sof::Check.load(server.types)
-      #result = Parallel.map_with_index(checks, :in_threads => check_concurrency) do |check|
-      result = checks.map do |check|
+    result = Parallel.map_with_index(servers, :in_processes => server_concurrency) do |server|
+      checks = Sof::Check.load(server.categories)
+      result = Parallel.map_with_index(checks, :in_threads => check_concurrency) do |check|
         check.run(server)
       end
     end

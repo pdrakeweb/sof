@@ -1,4 +1,4 @@
-require 'sof/ssh'
+require_relative '../ssh'
 
 module Sof::Checks
 class Ssh < Sof::Check

@@ -1,19 +1,18 @@
-require 'sof'
 require 'net/ssh'
 
 module Sof
 class Server
-  attr_accessor :types, :hostname, :username, :port
+  attr_accessor :categories, :hostname, :username, :port
 
-  def initialize
-    @types ||= [:web]
-    @hostname ||= 'localhost'
-    @username ||= 'root'
-    @port ||= '22'
+  def initialize(server_record)
+    @categories ||= server_record['categories']
+    @hostname ||= server_record['name']
+    @username ||= server_record['username']
+    @port ||= server_record['port']
   end
 
   def run(check)
-    check.run(@hostname, @port, @username)
+    check.run(hostname, port, username)
   end
 end
 end

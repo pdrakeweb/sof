@@ -1,5 +1,3 @@
-require 'sof'
-
 module Sof
 class CheckLoader
 
