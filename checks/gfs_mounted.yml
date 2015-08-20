@@ -1,0 +1,6 @@
+name: gfs_mounted
+command: '/usr/lib/nagios/plugins/check_gfs_mounted'
+category:
+  - base
+type: ssh
+sudo: root
