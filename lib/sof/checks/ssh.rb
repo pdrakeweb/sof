@@ -28,7 +28,8 @@ class Ssh < Sof::Check
         check_title = "#{@name}"
       end
 
-      extra_fields = { 'exit status' => ssh_result[:exitstatus], 'stdout' => ssh_result[:stdout].strip }
+      stdout = @options[:verbose] ? ssh_result[:stdout] : truncate(ssh_result[:stdout])
+      extra_fields = { 'exit status' => ssh_result[:exitstatus], 'stdout' => stdout }
       check_status = ssh_result[:exitstatus] ==  @expected_result ? :pass : :fail
     rescue Errno::ECONNREFUSED
       check_title = "#{@name} connection refused"
@@ -41,7 +42,7 @@ class Ssh < Sof::Check
 
   def truncate(s, length = 255, ellipsis = '...')
     if s.length > length
-      s.to_s[0..length].gsub(/[^\w]\w+\s*$/, ellipsis)
+      ellipsis + s.reverse[0..length].reverse
     else
       s
     end
