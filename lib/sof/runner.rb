@@ -22,6 +22,7 @@ class Runner
     #Parallel.map_with_index(servers, :in_processes => server_concurrency, :progress => 'Running checks') do |server|
     result = Parallel.map_with_index(servers, :in_processes => server_concurrency) do |server|
       checks = Sof::Check.load(server.categories)
+      puts YAML.dump(server.categories)
       result = Parallel.map_with_index(checks, :in_threads => check_concurrency) do |check|
         check.run(server)
       end
