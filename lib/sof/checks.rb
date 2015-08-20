@@ -8,7 +8,7 @@ module Sof::Checks
   rescue NameError
     raise(UnknownCheckType, "Unknown check type #{type}")
   end
-  
+
   def self.camelize(type)
     type.split("_").each {|s| s.capitalize! }.join("")
   end
