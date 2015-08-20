@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
+require 'rubygems'
+require 'bundler/setup'
+
 require 'thor'
+
 require_relative '../lib/sof'
 require_relative '../lib/sof/runner'
 require_relative '../lib/sof/manifest'
