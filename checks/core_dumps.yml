@@ -1,6 +1,6 @@
 name: core_dumps
 command: 'find $(dirname $(cat /proc/sys/kernel/core_pattern | cut -d " " -f1)) ! -empty | grep ""'
-expected_result: 0
+expected_result: 1
 category:
   - base
 type: ssh
