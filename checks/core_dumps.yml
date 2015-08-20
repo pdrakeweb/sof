@@ -1,7 +1,9 @@
 name: core_dumps
-command: 'find $(dirname $(cat core_pattern | cut -d " " -f1)) ! -empty | grep ""'
+command: 'find $(dirname $(cat /proc/sys/kernel/core_pattern | cut -d " " -f1)) ! -empty | grep ""'
 expected_result: 0
 category:
   - base
 type: ssh
 sudo: root
+dependencies:
+  - ssh
