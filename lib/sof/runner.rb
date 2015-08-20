@@ -22,9 +22,21 @@ class Runner
     @results = []
     @results = Parallel.map_with_index(servers, :in_processes => server_concurrency, :progress => 'Running checks') do |server|
       checks = Sof::Check.load(server.categories, @options)
-      check_results = Parallel.map_with_index(checks, :in_threads => check_concurrency) do |check|
-        check.options = @options
-        { :check => check, :return => check.run(server) }
+      check_results = []
+      checks.each{ |check| check.options = @options }
+
+      ssh_check = checks.find{ |check| check.name == 'ssh' }
+      checks.delete(ssh_check)
+
+      ssh_check_result = { :check => ssh_check, :return => ssh_check.run_check(server) }
+      check_results << ssh_check_result
+
+      if ssh_check_result[:return].first[1]['status'] != :pass
+        checks.select!{ |check| check.dependencies && !check.dependencies.include?('ssh') }
+      end
+
+      check_results += Parallel.map_with_index(checks, :in_threads => check_concurrency) do |check|
+        { :check => check, :return => check.run_check(server) }
       end
       { :server => server, :result => check_results }
     end
@@ -36,7 +48,7 @@ class Runner
       check_results = []
       check_results << "#{single_result[:result].size} checks completed"
       single_result[:result].each do |check_result|
-        if check_result[:return].first[1]['status'] == :fail || options[:verbose]
+        if check_result[:return].first[1]['status'] != :pass || options[:verbose]
           check_results << check_result[:return]
         end
       end
