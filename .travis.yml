@@ -14,7 +14,6 @@ script:
   - "ruby tools/syntax_checker.rb"
   # Run all specs.
   - "bundle exec rspec"
-  # Run puppet linter
 
 matrix:
   allow_failures:
