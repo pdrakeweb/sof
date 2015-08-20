@@ -1,4 +1,4 @@
-name: puppet
+name: puppet_is_disabled
 command: 'test -f /var/lib/puppet/state/agent_disabled.lock && cat /var/lib/puppet/state/agent_disabled.lock'
 expected_result: 1
 category:

@@ -1,4 +1,4 @@
-name: puppet
+name: puppet_is_stuck
 command: 'find /var/lib/puppet/ -maxdepth 1 -type f -name agent.pid -mmin +30 -printf "%s is older than 30 minutes\n" | grep older'
 expected_result: 1
 category:
