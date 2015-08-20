@@ -1,3 +1,5 @@
+require 'syslog'
+
 module Sof
 class Runner
 
@@ -55,6 +57,25 @@ class Runner
       munged_output[single_result[:server].hostname] = check_results
     end
     puts munged_output.to_yaml
+  end
+
+  def log_results
+    Syslog.open('sof', Syslog::LOG_CONS) do |s|
+      @results.each do |single_result|
+        server = single_result[:server]
+        single_result[:result].each do |check_result|
+          result_return = check_result[:return].first[1]
+          if result_return['status'] != :pass
+            s.err(format_log_message(server, check_result[:check], result_return))
+          end
+        end
+      end
+    end
+  end
+
+  def format_log_message(server, check, result)
+    output = result['output'].nil? ? '-' : result['output'].strip
+    "sof #{server.hostname} #{check.name} #{result['status']} #{output}"
   end
 end
 end
