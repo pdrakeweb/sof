@@ -1,5 +1,5 @@
 language: ruby
-cache: bundler
+
 # This will enable the docker base infrastructure for
 # travis tests. It should result in faster test vm load times.
 sudo: false
@@ -7,12 +7,9 @@ rvm:
   - "2.1.6"
   - ruby-head
 
-
-install: bundle install --path vendor/bundle/
-
 script:
   # Run all specs.
-  - "bundle exec rspec"
+  - "bundle/bin/rspec"
 
 matrix:
   allow_failures:
