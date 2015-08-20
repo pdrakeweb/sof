@@ -1,5 +1,6 @@
 name: services
-command: '/usr/bin/sudo /usr/lib/nagios/plugins/check_services'
+command: '/usr/lib/nagios/plugins/check_services | head -n 1'
 category:
   - base
 type: ssh
+sudo: root

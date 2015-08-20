@@ -1,5 +1,6 @@
 name: disk_writable
-command: '/usr/bin/sudo /usr/lib/nagios/plugins/check_disk_writable'
+command: '/usr/lib/nagios/plugins/check_disk_writable'
 category:
   - base
 type: ssh
+sudo: root

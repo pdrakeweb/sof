@@ -1,5 +1,6 @@
 name: disk
-command: '/usr/bin/sudo /usr/lib/nagios/plugins/check_disk -X proc -X sysfs -X tmpfs -X devpts -X securityfs -X fuse.glusterfs -w 10% -c 5%'
+command: '/usr/lib/nagios/plugins/check_disk -X proc -X sysfs -X tmpfs -X devpts -X securityfs -X fuse.glusterfs -w 10% -c 5%'
 category:
   - base
 type: ssh
+sudo: root
