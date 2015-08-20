@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 require 'rubygems'
-require 'bundler/setup'
+
+# Created by bundle install --standalone
+require_relative '../bundle/bundler/setup'
 
 require 'thor'
 
