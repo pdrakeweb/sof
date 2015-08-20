@@ -4,6 +4,6 @@ expected_result: 1
 category:
   - base
 type: ssh
-depdencencies:
+dependencies:
   - ssh
 sudo: root

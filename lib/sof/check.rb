@@ -12,16 +12,20 @@ module Sof
       @command = check['command']
       @dependencies = check['dependencies']
       @timeout = check['timeout'] || 30
+      @description = check['description']
     end
 
     def run_check(server)
+      check_result = nil
       begin
         Timeout::timeout(@timeout) {
-          run(server)
+          check_result = run(server)
         }
       rescue Timeout::Error
-        check_timeout_result
+        check_result = check_timeout_result
       end
+      check_result.first[1]['description'] = @description if @description
+      check_result
     end
 
     def check_timeout_result
