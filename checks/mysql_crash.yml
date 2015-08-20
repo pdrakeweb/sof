@@ -1,0 +1,7 @@
+name: mysql_crash
+command: 'find /var/lib/mysql/ -name "*.err" -type f | xargs sudo grep "InnoDB: Failing assertion"'
+expected_result: 123
+category:
+  - db
+type: ssh
+sudo: root
