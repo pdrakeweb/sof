@@ -5,3 +5,5 @@ category:
   - db
 type: ssh
 sudo: root
+dependencies:
+  - ssh

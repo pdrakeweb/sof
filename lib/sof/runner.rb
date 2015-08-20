@@ -32,7 +32,7 @@ class Runner
       check_results << ssh_check_result
 
       if ssh_check_result[:return].first[1]['status'] != :pass
-        checks.select!{ |check| check.dependencies && !check.dependencies.include?('ssh') }
+        checks.select!{ |check| check.dependencies.nil? || !check.dependencies.include?('ssh') }
       end
 
       check_results += Parallel.map_with_index(checks, :in_threads => check_concurrency) do |check|
