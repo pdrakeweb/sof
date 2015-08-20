@@ -1,0 +1,6 @@
+name: segfault
+command: '/usr/lib/nagios/plugins/check_log2 -w 1 -c 10000000000000 -l /var/log/apache2/error.log -f /tmp/nrpe-httpd_segfault.log -s 'Segmentation fault''
+category:
+  - web
+type: ssh
+sudo: root
