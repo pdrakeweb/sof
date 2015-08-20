@@ -2,7 +2,7 @@ require 'yaml'
 
 module Sof
   class Check
-    CHECK_PATHS = [ File.join(File.dirname(__FILE__), '..', '..', 'checks'), '/opt/sof/checks', '~/.sof' ]
+    CHECK_PATHS = [ File.join(File.dirname(__FILE__), '..', '..', 'checks'), '/opt/sof/checks', "#{Dir.home}/.sof" ]
 
     attr_accessor :type, :name, :category, :expected_result, :timeout, :command, :sanity, :description, :options, :dependencies, :timeout
 
@@ -38,7 +38,7 @@ module Sof
       CHECK_PATHS.each do |dir_path|
         Dir.glob("#{dir_path}/*.yml") do |yaml_file|
           data = YAML.load_file(yaml_file)
-          records[data['name']] = data if data['category'].include?('base') || !(category & data['category']).empty?
+          records[data['name']] = data if !category || data['category'].include?('base') || data['category'].include?(category)
         end
       end
 
