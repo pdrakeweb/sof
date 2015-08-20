@@ -7,6 +7,9 @@ rvm:
   - "2.1.6"
   - ruby-head
 
+install:
+  - echo "using standalone bundle"
+
 script:
   # Run all specs.
   - "bundle/bin/rspec"
