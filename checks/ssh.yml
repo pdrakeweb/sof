@@ -1,0 +1,6 @@
+name: ssh
+command: '/bin/true'
+category:
+  - base
+type: ssh
+timeout: 15
