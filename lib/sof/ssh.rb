@@ -5,10 +5,11 @@ class Ssh
 
   NETWORK_EXCEPTIONS = [ Errno::EHOSTUNREACH, Errno::ETIMEDOUT, Errno::ECONNREFUSED, Errno::ECONNABORTED, Errno::ECONNRESET, Errno::EHOSTUNREACH, Errno::EPIPE, Errno::EINVAL, Timeout::Error, SocketError, EOFError, IOError ]
 
-  def initialize(server)
+  def initialize(server, echo:)
     @server = server
-    @ssh_options = { :port => server.port }
+    @ssh_options = { :port => server.port, :compression => false }
     @ssh_retries = 10
+    @echo = echo
   end
 
   def exec(cmd)
@@ -18,8 +19,6 @@ class Ssh
     result_code = 0
 
     remote_command = cmd
-
-    puts "ssh #{@server.username}@#{@server.hostname} #{remote_command}"
 
     channel = ssh_session.open_channel do |ch|
       ch.exec(remote_command) do |ch2, success|
@@ -46,6 +45,13 @@ class Ssh
     end
 
     channel.wait
+
+    if @echo
+      puts "ssh #{@server.username}@#{@server.hostname} #{remote_command}"
+      puts output
+      STDERR.puts errors
+    end
+
     return {:exitstatus => result_code, :stdout => output, :stderr => errors}
   end
 

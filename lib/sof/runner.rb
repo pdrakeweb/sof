@@ -1,12 +1,13 @@
 module Sof
 class Runner
 
-  attr_accessor :server_concurrency, :check_concurrency, :manifest, :results
+  attr_accessor :server_concurrency, :check_concurrency, :manifest, :results, :options
 
-  def initialize(manifest)
+  def initialize(manifest, options)
     @server_concurrency ||= 10
     @check_concurrency ||= 5
     @manifest = manifest
+    @options = options
   end
 
   def servers
@@ -22,6 +23,7 @@ class Runner
     @results = Parallel.map_with_index(servers, :in_processes => server_concurrency, :progress => 'Running checks') do |server|
       checks = Sof::Check.load(server.categories)
       check_results = Parallel.map_with_index(checks, :in_threads => check_concurrency) do |check|
+        check.options = @options
         { :check => check, :return => check.run(server) }
       end
       { :server => server, :result => check_results }
@@ -34,7 +36,7 @@ class Runner
       check_results = []
       check_results << "#{single_result[:result].size} checks completed"
       single_result[:result].each do |check_result|
-        if check_result[:return].first[1]['status'] == :fail || verbose
+        if check_result[:return].first[1]['status'] == :fail || options[:verbose]
           check_results << check_result[:return]
         end
       end
