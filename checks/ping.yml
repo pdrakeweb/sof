@@ -4,3 +4,4 @@ category:
   - base
 type: local
 timeout: 5
+description: The target server may be unreachable from your location on the network, or it may not be responding to ICMP traffic.
