@@ -29,7 +29,7 @@ class Ssh < Sof::Check
       end
 
       stdout = @options[:verbose] ? ssh_result[:stdout] : truncate(ssh_result[:stdout])
-      extra_fields = { 'exit status' => ssh_result[:exitstatus], 'stdout' => stdout }
+      extra_fields = { 'exit status' => ssh_result[:exitstatus], 'output' => stdout }
       check_status = ssh_result[:exitstatus] ==  @expected_result ? :pass : :fail
     rescue Errno::ECONNREFUSED
       check_title = "#{@name} connection refused"
