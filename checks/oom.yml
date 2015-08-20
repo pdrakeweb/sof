@@ -5,5 +5,5 @@ category:
   - base
 type: ssh
 sudo: root
-depdencies:
+dependencies:
   - ssh

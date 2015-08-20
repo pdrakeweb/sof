@@ -9,7 +9,7 @@ class Ssh < Sof::Check
     @expected_result = check['expected_result'] || 0
   end
 
-  def command
+  def command(server)
     @sudo.nil? ? @command : "sudo -u #{@sudo} #{@command}"
   end
 
@@ -17,7 +17,7 @@ class Ssh < Sof::Check
     ssh = Sof::Ssh.new(server, echo: @options[:debug])
     extra_fields = {}
     begin
-      ssh_result = ssh.exec(command)
+      ssh_result = ssh.exec(command(server))
 
       case ssh_result[:exitstatus]
       when 255

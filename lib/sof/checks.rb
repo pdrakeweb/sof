@@ -1,4 +1,5 @@
 require_relative 'checks/ssh'
+require_relative 'checks/local'
 
 module Sof::Checks
   UnknownCheckType = Class.new(RuntimeError)

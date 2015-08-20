@@ -6,4 +6,4 @@ gem 'parallel'
 gem 'ruby-progressbar'
 gem 'thor'
 gem 'rspec'
-
+gem 'popen4'
