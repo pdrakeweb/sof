@@ -3,11 +3,10 @@ require_relative '../ssh'
 module Sof::Checks
 class Ssh < Sof::Check
 
-  attr_accessor :sudo
-
   def initialize(check)
     super(check)
     @sudo = check['sudo']
+    @expected_result = check['expected_result'] || 0
   end
 
   def command
@@ -27,7 +26,7 @@ class Ssh < Sof::Check
       check_title = "#{@name}"
     end
 
-    check_status = ssh_result[:exitstatus] == 0 ? :pass : :fail
+    check_status = ssh_result[:exitstatus] == @expected_result ? :pass : :fail
     { check_title => {'status' => check_status, 'exit status' => ssh_result[:exitstatus], 'stdout' => ssh_result[:stdout].strip } }
 
   end
