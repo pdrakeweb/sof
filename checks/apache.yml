@@ -1,0 +1,8 @@
+name: apache_responsive
+command: 'curl -I localhost > /dev/null'
+category:
+  - web
+type: ssh
+dependencies:
+  - ssh
+timeout: 5
