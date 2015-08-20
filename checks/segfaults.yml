@@ -2,6 +2,6 @@ name: segfault
 command: 'grep "segfault at " /var/log/syslog'
 expected_result: 1
 category:
-  - web
+  - base
 type: ssh
 sudo: root
