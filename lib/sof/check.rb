@@ -12,7 +12,7 @@ module Sof
       @command = check['command']
     end
 
-    def self.load(category)
+    def self.load(category, options)
       records = {}
       objects = []
       CHECK_PATHS.each do |dir_path|
@@ -25,6 +25,7 @@ module Sof
       records.each do |_, record|
         klass = Sof::Checks.class_from_type(record['type'])
         objects << klass.new(record)
+        puts record if options[:debug]
       end
       objects
     end
