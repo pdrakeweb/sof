@@ -38,7 +38,7 @@ module Sof
       CHECK_PATHS.each do |dir_path|
         Dir.glob("#{dir_path}/*.yml") do |yaml_file|
           data = YAML.load_file(yaml_file)
-          records[data['name']] = data if !category || data['category'].include?('base') || data['category'].include?(category)
+          records[data['name']] = data if data['category'].include?('base') || (category && data['category'].include?(category))
         end
       end
 
