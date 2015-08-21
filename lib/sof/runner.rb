@@ -93,7 +93,7 @@ class Runner
     }
 
     if unhealthy_server_count == 0
-      puts munged_output.to_yaml.colorize(:blue)
+      puts munged_output.to_yaml.colorize(:green)
     else
       puts munged_output.to_yaml.colorize(:red)
     end
