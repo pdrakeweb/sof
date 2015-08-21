@@ -24,7 +24,7 @@ class SshScript < Sof::Check
   end
 
   def run(server)
-    ssh = Sof::Ssh.new(server, echo: @options[:debug])
+    ssh = Sof::Ssh.new(server, echo: @options.debug)
     extra_fields = {}
     begin
       ssh.ssh_session.scp.upload!("#{local_path}/#{@command}", @remote_path)
@@ -41,7 +41,7 @@ class SshScript < Sof::Check
         check_title = "#{@name}"
       end
 
-      stdout = @options[:verbose] ? ssh_result[:stdout] : truncate(ssh_result[:stdout])
+      stdout = @options.verbose ? ssh_result[:stdout] : truncate(ssh_result[:stdout])
       extra_fields = { 'exit status' => ssh_result[:exitstatus], 'output' => stdout }
       check_status = ssh_result[:exitstatus] ==  @expected_result ? :pass : :fail
     rescue SocketError

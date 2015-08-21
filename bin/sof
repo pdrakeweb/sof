@@ -13,6 +13,9 @@ class SofCommand < Thor
   method_option :verbose, required: false, default: false, type: :boolean, aliases: '-v', desc: 'be verbose'
   method_option :debug, required: false, default: false, type: :boolean, aliases: '-d', desc: 'output debugging'
   method_option :log, required: false, default: false, type: :boolean, aliases: '-l', desc: 'write failures to syslog'
+  method_option :timeout, required: false, default: 30, type: :numeric, aliases: '-t', desc: 'default check timeout'
+  method_option :server_concurrency, required: false, default: 10, type: :numeric, aliases: '-s', desc: 'The number of servers to concurrently check'
+  method_option :check_concurrency, required: false, default: 5, type: :numeric, aliases: '-c', desc: 'The number of concurrent checks to run per server'
   desc 'check-server', 'Takes a list of servers (ADDRESS:TYPE) and a SSH port to check if they are on fire'
   def check_server
     if options[:manifest].nil?
@@ -20,7 +23,8 @@ class SofCommand < Thor
     else
       manifest = Sof::Manifest.get(options[:manifest])
     end
-    sof = Sof::Runner.new(manifest, options)
+    sof_options = Sof::Options.set_options(options)
+    sof = Sof::Runner.new(manifest)
     sof.run_checks
     sof.output_results
     sof.log_results if options[:log]

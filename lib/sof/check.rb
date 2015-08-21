@@ -4,15 +4,16 @@ module Sof
   class Check
     CHECK_PATHS = [ File.join(File.dirname(__FILE__), '..', '..', 'checks'), '/opt/sof/checks', "#{Dir.home}/.sof" ]
 
-    attr_accessor :type, :name, :category, :expected_result, :timeout, :command, :sanity, :description, :options, :dependencies, :timeout
+    attr_accessor :type, :name, :category, :expected_result, :timeout, :command, :sanity, :description, :dependencies, :timeout
 
     def initialize(check)
       @type = check['type']
       @name = check['name']
       @command = check['command']
       @dependencies = check['dependencies']
-      @timeout = check['timeout'] || 30
       @description = check['description']
+      @options = Sof::Options.instance
+      @timeout = check['timeout'] || @options.timeout
     end
 
     def run_check(server)
@@ -32,7 +33,7 @@ module Sof
       { "#{@name} timed out" => {'status' => :timeout } }
     end
 
-    def self.load(categories, options)
+    def self.load(categories)
       records = {}
       objects = []
       CHECK_PATHS.each do |dir_path|
@@ -45,7 +46,7 @@ module Sof
       records.each do |_, record|
         klass = Sof::Checks.class_from_type(record['type'])
         objects << klass.new(record)
-        puts record if options[:debug]
+        puts record if Sof::Options.instance.debug
       end
       objects
     end

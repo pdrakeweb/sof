@@ -4,13 +4,11 @@ require 'benchmark'
 module Sof
 class Runner
 
-  attr_accessor :server_concurrency, :check_concurrency, :manifest, :results, :options
+  attr_accessor :server_concurrency, :check_concurrency, :manifest, :results
 
-  def initialize(manifest, options)
-    @server_concurrency ||= 10
-    @check_concurrency ||= 5
+  def initialize(manifest)
     @manifest = manifest
-    @options = options
+    @options = Sof::Options.instance
   end
 
   def servers
@@ -24,10 +22,9 @@ class Runner
   def run_checks
     @results = []
     @total_time = Benchmark.realtime do
-      @results = Parallel.map_with_index(servers, :in_processes => server_concurrency, :progress => 'Running checks') do |server|
-        checks = Sof::Check.load(server.categories, @options)
+      @results = Parallel.map_with_index(servers, :in_processes => @options.server_concurrency, :progress => 'Running checks') do |server|
+        checks = Sof::Check.load(server.categories)
         check_results = []
-        checks.each{ |check| check.options = @options }
 
         ssh_check = checks.find{ |check| check.name == 'ssh' }
         checks.delete(ssh_check)
@@ -39,7 +36,7 @@ class Runner
           checks.select!{ |check| check.dependencies.nil? || !check.dependencies.include?('ssh') }
         end
 
-        check_results += Parallel.map_with_index(checks, :in_threads => check_concurrency) do |check|
+        check_results += Parallel.map_with_index(checks, :in_threads => @options.check_concurrency) do |check|
           { :check => check, :return => check.run_check(server) }
         end
         { :server => server, :result => check_results }
@@ -62,7 +59,7 @@ class Runner
           failure_count += 1
           server_has_failure = true
         end
-        if failure || options[:verbose]
+        if failure || @options.verbose
           check_results << check_result[:return]
         end
       end
