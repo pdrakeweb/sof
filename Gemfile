@@ -7,6 +7,7 @@ gem 'parallel'
 gem 'ruby-progressbar'
 gem 'thor'
 gem 'popen4'
+gem 'colorize'
 
 group :test, :developement do
   gem 'rspec'

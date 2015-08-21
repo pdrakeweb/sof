@@ -4,6 +4,7 @@ require 'benchmark'
 # Load these early to work around core ruby bug when threading.
 require 'net/ssh'
 require 'net/scp'
+require 'colorize'
 
 module Sof
 class Runner
@@ -65,12 +66,14 @@ class Runner
           server_has_failure = true
         end
         if failure || @options.verbose
-          check_results << check_result[:return]
+          if failure
+            puts "#{check_result[:return].first[0]} #{single_result[:server].hostname} #{check_result[:return].first[1]['status']}".colorize(:red)
+            puts "    #{check_result[:return].first[1]['stdout'].strip}" if check_result[:return].first[1]['stdout']
+            puts "    #{check_result[:return].first[1]['description'].strip}" if check_result[:return].first[1]['description']
+          else
+            puts "#{check_result[:return].first[0]} #{single_result[:server].hostname} #{check_result[:return].first[1]['status']}".colorize(:blue)
+          end
         end
-      end
-
-      if server_has_failure || @options.verbose
-        munged_output[single_result[:server].hostname] = check_results
       end
 
       server_count += 1
@@ -89,7 +92,11 @@ class Runner
       'time' => "#{@total_time.round}s",
     }
 
-    puts munged_output.to_yaml
+    if unhealthy_server_count == 0
+      puts munged_output.to_yaml.colorize(:blue)
+    else
+      puts munged_output.to_yaml.colorize(:red)
+    end
   end
 
   def log_results
