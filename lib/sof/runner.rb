@@ -67,8 +67,8 @@ class Runner
         end
         if failure || @options.verbose
           if failure
-            puts "#{check_result[:return].first[0]} #{single_result[:server].hostname} #{check_result[:return].first[1]['status']}".colorize(:red)
-            puts "    #{check_result[:return].first[1]['stdout'].strip}" if check_result[:return].first[1]['stdout']
+            puts "#{check_result[:return].first[0].ljust(15)} #{single_result[:server].hostname.ljust(40)} #{check_result[:return].first[1]['status']}".colorize(:red)
+            puts "    #{check_result[:return].first[1]['output'].strip}" if check_result[:return].first[1]['output']
             puts "    #{check_result[:return].first[1]['description'].strip}" if check_result[:return].first[1]['description']
           else
             puts "#{check_result[:return].first[0]} #{single_result[:server].hostname} #{check_result[:return].first[1]['status']}".colorize(:green)
