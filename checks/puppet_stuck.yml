@@ -6,4 +6,3 @@ category:
 type: ssh
 dependencies:
   - ssh
-sudo: root
