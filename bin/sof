@@ -35,6 +35,7 @@ class SofCommand < Thor
   private
 
   def standard_io_yaml
+    puts 'Please enter your manifest in YAML format:'
     manifest = ''
     line = ''
     loop do
@@ -42,6 +43,7 @@ class SofCommand < Thor
       manifest << line
       break if line == "\n"
     end
+    raise Thor::Error, 'Invalid manifest' unless YAML.load(manifest).instance_of?(Hash)
     YAML.load(manifest)
   end
 end
