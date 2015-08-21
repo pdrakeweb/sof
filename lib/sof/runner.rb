@@ -1,6 +1,10 @@
 require 'syslog'
 require 'benchmark'
 
+# Load these early to work around core ruby bug when threading.
+require 'net/ssh'
+require 'net/scp'
+
 module Sof
 class Runner
 
