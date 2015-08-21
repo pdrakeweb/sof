@@ -5,5 +5,8 @@ gem 'net-ssh', '>=2.9.1'
 gem 'parallel'
 gem 'ruby-progressbar'
 gem 'thor'
-gem 'rspec'
 gem 'popen4'
+
+group :test, :developement do
+  gem 'rspec'
+end
