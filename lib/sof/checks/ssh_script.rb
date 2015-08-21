@@ -1,25 +1,28 @@
 require_relative '../ssh'
 
 module Sof::Checks
-class Ssh < Sof::Check
+class SshScript < Sof::Check
 
   def initialize(check)
     super(check)
     @sudo = check['sudo']
     @expected_result = check['expected_result'] || 0
+    @path = check['path']
+    @remote_path = '/tmp'
   end
 
-  def command(server)
-    command_template = @sudo.nil? ? @command : "sudo -u #{@sudo} #{@command}"
-    renderer = ERB.new(command_template)
-    renderer.result(server.get_binding)
+  def command
+     @sudo.nil? ? @command : "sudo -u #{@sudo} #{@remote_path}/#{@command}"
   end
 
   def run(server)
     ssh = Sof::Ssh.new(server, echo: @options[:debug])
     extra_fields = {}
     begin
-      ssh_result = ssh.exec(command(server))
+      ssh.ssh_session.scp.upload!("#{@path}/#{@command}", @remote_path)
+      ssh.exec("chmod +x #{@remote_path}/#{@command}")
+      ssh_result = ssh.exec(command)
+      ssh.exec("rm #{@remote_path}/#{@command}")
 
       case ssh_result[:exitstatus]
       when 255
