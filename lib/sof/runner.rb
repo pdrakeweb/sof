@@ -1,4 +1,5 @@
 require 'syslog'
+require 'benchmark'
 
 module Sof
 class Runner
@@ -22,40 +23,66 @@ class Runner
 
   def run_checks
     @results = []
-    @results = Parallel.map_with_index(servers, :in_processes => server_concurrency, :progress => 'Running checks') do |server|
-      checks = Sof::Check.load(server.categories, @options)
-      check_results = []
-      checks.each{ |check| check.options = @options }
+    @total_time = Benchmark.realtime do
+      @results = Parallel.map_with_index(servers, :in_processes => server_concurrency, :progress => 'Running checks') do |server|
+        checks = Sof::Check.load(server.categories, @options)
+        check_results = []
+        checks.each{ |check| check.options = @options }
 
-      ssh_check = checks.find{ |check| check.name == 'ssh' }
-      checks.delete(ssh_check)
+        ssh_check = checks.find{ |check| check.name == 'ssh' }
+        checks.delete(ssh_check)
 
-      ssh_check_result = { :check => ssh_check, :return => ssh_check.run_check(server) }
-      check_results << ssh_check_result
+        ssh_check_result = { :check => ssh_check, :return => ssh_check.run_check(server) }
+        check_results << ssh_check_result
 
-      if ssh_check_result[:return].first[1]['status'] != :pass
-        checks.select!{ |check| check.dependencies.nil? || !check.dependencies.include?('ssh') }
+        if ssh_check_result[:return].first[1]['status'] != :pass
+          checks.select!{ |check| check.dependencies.nil? || !check.dependencies.include?('ssh') }
+        end
+
+        check_results += Parallel.map_with_index(checks, :in_threads => check_concurrency) do |check|
+          { :check => check, :return => check.run_check(server) }
+        end
+        { :server => server, :result => check_results }
       end
-
-      check_results += Parallel.map_with_index(checks, :in_threads => check_concurrency) do |check|
-        { :check => check, :return => check.run_check(server) }
-      end
-      { :server => server, :result => check_results }
     end
   end
 
   def output_results(verbose = false)
     munged_output = {}
+    server_count = unhealthy_server_count = failure_count = check_count = 0
+
     @results.each do |single_result|
       check_results = []
+      server_has_failure = false
       check_results << "#{single_result[:result].size} checks completed"
       single_result[:result].each do |check_result|
-        if check_result[:return].first[1]['status'] != :pass || options[:verbose]
+        check_count += 1
+        failure = check_result[:return].first[1]['status'] != :pass
+        if failure
+          failure_count += 1
+          server_has_failure = true
+        end
+        if failure || options[:verbose]
           check_results << check_result[:return]
         end
       end
       munged_output[single_result[:server].hostname] = check_results
+      server_count += 1
+      unhealthy_server_count += 1 if server_has_failure
     end
+
+    munged_output['stats'] = {
+      'servers' => {
+        'total' => server_count,
+        'unhealthy' => unhealthy_server_count,
+      },
+      'checks' => {
+        'total' => check_count,
+        'failures' => failure_count,
+      },
+      'time' => "#{@total_time.round}s",
+    }
+
     puts munged_output.to_yaml
   end
 
