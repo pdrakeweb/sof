@@ -1,4 +1,3 @@
-require 'net/ssh'
 require 'singleton'
 
 module Sof
