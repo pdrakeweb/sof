@@ -11,6 +11,14 @@ class SshScript < Sof::Check
     @remote_path = '/tmp'
   end
 
+  def local_path
+    if Pathname.new(@path).absolute?
+      @path
+    else
+      File.join(File.dirname(__FILE__), '..', '..', '..', @path)
+    end
+  end
+
   def command
      @sudo.nil? ? @command : "sudo -u #{@sudo} #{@remote_path}/#{@command}"
   end
@@ -19,7 +27,7 @@ class SshScript < Sof::Check
     ssh = Sof::Ssh.new(server, echo: @options[:debug])
     extra_fields = {}
     begin
-      ssh.ssh_session.scp.upload!("#{@path}/#{@command}", @remote_path)
+      ssh.ssh_session.scp.upload!("#{local_path}/#{@command}", @remote_path)
       ssh.exec("chmod +x #{@remote_path}/#{@command}")
       ssh_result = ssh.exec(command)
       ssh.exec("rm #{@remote_path}/#{@command}")
