@@ -71,7 +71,7 @@ class Runner
             puts "    #{check_result[:return].first[1]['stdout'].strip}" if check_result[:return].first[1]['stdout']
             puts "    #{check_result[:return].first[1]['description'].strip}" if check_result[:return].first[1]['description']
           else
-            puts "#{check_result[:return].first[0]} #{single_result[:server].hostname} #{check_result[:return].first[1]['status']}".colorize(:blue)
+            puts "#{check_result[:return].first[0]} #{single_result[:server].hostname} #{check_result[:return].first[1]['status']}".colorize(:green)
           end
         end
       end
