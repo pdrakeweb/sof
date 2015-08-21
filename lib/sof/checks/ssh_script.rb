@@ -5,7 +5,7 @@ class SshScript < Sof::Check
 
   def initialize(check)
     super(check)
-    @sudo = check['sudo']
+    @sudo = check['user']
     @expected_result = check['expected_result'] || 0
     @path = check['path']
     @remote_path = '/tmp'

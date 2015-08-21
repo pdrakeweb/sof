@@ -6,4 +6,4 @@ type: ssh
 expected_result: 1
 dependencies:
   - ssh
-sudo: root
+user: root
