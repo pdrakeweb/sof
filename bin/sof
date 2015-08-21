@@ -40,6 +40,17 @@ class SofCommand < Thor
     end
     YAML.load(manifest)
   end
+
+  def self.start(given_args = ARGV, config = {})
+    super(given_args, config)
+  rescue Interrupt
+    puts 'Interrupted.'
+    exit 1
+  end
+
+  def self.exit_on_failure?
+    true
+  end
 end
 
 SofCommand.start
