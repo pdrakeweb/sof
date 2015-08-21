@@ -22,6 +22,7 @@ class SshScript < Sof::Check
       ssh.ssh_session.scp.upload!("#{@path}/#{@command}", @remote_path)
       ssh.exec("chmod +x #{@remote_path}/#{@command}")
       ssh_result = ssh.exec(command)
+      ssh.exec("rm #{@remote_path}/#{@command}")
 
       case ssh_result[:exitstatus]
       when 255

@@ -1,7 +1,7 @@
 name: slow_queries
 command: mysql_slow_queries.sh
 path: scripts/
-expected_result: 1
+expected_result: 0
 category:
   - db
 type: ssh_script
