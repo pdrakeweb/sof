@@ -32,13 +32,13 @@ module Sof
       { "#{@name} timed out" => {'status' => :timeout } }
     end
 
-    def self.load(category, options)
+    def self.load(categories, options)
       records = {}
       objects = []
       CHECK_PATHS.each do |dir_path|
         Dir.glob("#{dir_path}/*.yml") do |yaml_file|
           data = YAML.load_file(yaml_file)
-          records[data['name']] = data if data['category'].include?('base') || (category && data['category'].include?(category))
+          records[data['name']] = data if !categories || data['category'].include?('base') || !(data['category'] & categories).empty?
         end
       end
 
