@@ -52,32 +52,44 @@ class Runner
   def output_results(verbose = false)
     munged_output = {}
     server_count = unhealthy_server_count = failure_count = check_count = 0
-
+    pass_results = []
+    failure_results = []
     @results.each do |single_result|
-      check_results = []
       server_has_failure = false
-      check_results << "#{single_result[:result].size} checks completed"
 
       single_result[:result].each do |check_result|
         check_count += 1
         failure = check_result[:return].first[1]['status'] != :pass
+        check_string = "#{check_result[:return].first[0].ljust(20)} #{single_result[:server].hostname.ljust(40)} #{check_result[:return].first[1]['status']}"
+
         if failure
           failure_count += 1
           server_has_failure = true
-        end
-        if failure || @options.verbose
-          if failure
-            puts "#{check_result[:return].first[0].ljust(15)} #{single_result[:server].hostname.ljust(40)} #{check_result[:return].first[1]['status']}".colorize(:red)
-            puts "    #{check_result[:return].first[1]['output'].strip}" if check_result[:return].first[1]['output']
-            puts "    #{check_result[:return].first[1]['description'].strip}" if check_result[:return].first[1]['description']
-          else
-            puts "#{check_result[:return].first[0]} #{single_result[:server].hostname} #{check_result[:return].first[1]['status']}".colorize(:green)
-          end
+          failure_content = [check_string]
+          failure_content << multiline_indent(check_result[:return].first[1]['output'].strip) if check_result[:return].first[1]['output']
+          failure_content << multiline_indent(check_result[:return].first[1]['description'].strip) if check_result[:return].first[1]['description']
+          failure_results << failure_content
+        else
+          pass_results << [check_string]
         end
       end
 
       server_count += 1
       unhealthy_server_count += 1 if server_has_failure
+    end
+
+    failure_results.sort!{ |a,b| a.first <=> b.first }
+    failure_results.each do |result|
+      puts result[0].colorize(:red)
+      puts result[1] if result[1]
+      puts result[2] if result[2]
+    end
+
+    if @options.verbose
+      pass_results.sort!{ |a,b| a[0] <=> b[0] }
+      pass_results.each do |result|
+        puts result[0].colorize(:green)
+      end
     end
 
     munged_output['stats'] = {
@@ -97,6 +109,14 @@ class Runner
     else
       puts munged_output.to_yaml.colorize(:red)
     end
+  end
+
+  def multiline_indent(input_string)
+    result = ''
+    input_string.each_line do |line|
+      result << "    #{line}"
+    end
+    result
   end
 
   def log_results
