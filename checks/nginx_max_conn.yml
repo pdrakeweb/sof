@@ -1,0 +1,9 @@
+name: nginx_max_conn
+command: 'grep max_conn /var/log/nginx/error.log -c'
+category:
+  - bal
+type: ssh
+expected_result: 1
+dependencies:
+  - ssh
+sudo: root
