@@ -52,6 +52,7 @@ class Runner
       check_results = []
       server_has_failure = false
       check_results << "#{single_result[:result].size} checks completed"
+
       single_result[:result].each do |check_result|
         check_count += 1
         failure = check_result[:return].first[1]['status'] != :pass
@@ -63,7 +64,11 @@ class Runner
           check_results << check_result[:return]
         end
       end
-      munged_output[single_result[:server].hostname] = check_results
+
+      if server_has_failure || @options.verbose
+        munged_output[single_result[:server].hostname] = check_results
+      end
+
       server_count += 1
       unhealthy_server_count += 1 if server_has_failure
     end
