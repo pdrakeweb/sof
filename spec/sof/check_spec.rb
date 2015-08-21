@@ -5,10 +5,46 @@ require_relative 'mocks/check_mock'
 module Sof
   describe Check do
 
-    let(:record1) { { 'type' => 'check_mock', 'name' => 'thename1', 'command' => 'thecommand1', 'category' => ['base'] } }
-    let(:record2) { { 'type' => 'check_mock', 'name' => 'thename1', 'command' => 'thecommand2', 'category' => ['cat1', 'cat2'] } }
-    let(:record3) { { 'type' => 'check_mock', 'name' => 'thename2', 'command' => 'thecommand3', 'category' => ['cat2'] } }
-    let(:record4) { { 'type' => 'check_mock', 'name' => 'thename3', 'command' => 'thecommand3', 'category' => ['cat3'] } }
+    let(:record1) {{
+      'type' => 'check_mock',
+      'name' => 'thename1',
+      'command' => 'thecommand1',
+      'category' => ['base'],
+      'dependencies' => 'mocker',
+      'timeout' => 1,
+      'description' => 'thename1 runs thecommand1 and is a core check'
+    }}
+
+    let(:record2) {{
+      'type' => 'check_mock',
+      'name' => 'thename1',
+      'command' => 'thecommand2',
+      'category' => ['cat1', 'cat2'],
+      'dependencies' => 'mocker',
+      'timeout' => 1,
+      'description' => 'thename1 runs thecommand1 and is a core check'
+    }}
+
+    let(:record3) {{
+      'type' => 'check_mock',
+      'name' => 'thename2',
+      'command' => 'thecommand3',
+      'category' => ['cat2'],
+      'dependencies' => 'mocker',
+      'timeout' => 1,
+      'description' => 'thename1 runs thecommand1 and is a core check'
+    }}
+
+    let(:record4) {{
+      'type' => 'check_mock',
+      'name' => 'thename3',
+      'command' => 'thecommand3',
+      'category' => ['cat3'],
+      'dependencies' => 'mocker',
+      'timeout' => 1,
+      'description' => 'thename1 runs thecommand1 and is a core check'
+    }}
+
     let(:records) { [record1, record2, record3, record4] }
     let(:base_object) { described_class.new(record1) }
 
@@ -16,7 +52,9 @@ module Sof
       it 'should have type, name, and command accessors' do
         expect(base_object.type).to eq(record1['type'])
         expect(base_object.name).to eq(record1['name'])
-        expect(base_object.command).to eq(record1['command'])
+        expect(base_object.dependencies).to eq(record1['dependencies'])
+        expect(base_object.timeout).to eq(record1['timeout'])
+        expect(base_object.description).to eq(record1['description'])
       end
     end
 
@@ -54,6 +92,17 @@ module Sof
         check_mocks = described_class.load(['cat1', 'cat3'], {})
         expect_record_in_array_of_check_mocks(record2, check_mocks)
         expect_record_in_array_of_check_mocks(record4, check_mocks)
+      end
+    end
+
+    describe '#.run_check' do
+      before(:each) do
+
+      end
+      it 'should have type, name, and command accessors' do
+        expect(base_object.type).to eq(record1['type'])
+        expect(base_object.name).to eq(record1['name'])
+        expect(base_object.command).to eq(record1['command'])
       end
     end
 
