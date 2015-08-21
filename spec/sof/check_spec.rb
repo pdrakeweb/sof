@@ -1,5 +1,7 @@
 require 'yaml'
 require_relative '../../lib/sof/check'
+require_relative '../../lib/sof/options'
+require_relative '../../lib/sof/server'
 require_relative 'mocks/check_mock'
 
 module Sof
@@ -47,9 +49,12 @@ module Sof
 
     let(:records) { [record1, record2, record3, record4] }
     let(:base_object) { described_class.new(record1) }
+    let(:checkmock_object) { Sof::Checks::CheckMock.new(record1) }
+    let(:server) { instance_double(Sof::Server) }
 
     describe '.new' do
       it 'should have type, name, and command accessors' do
+        sof_options = Sof::Options.set_options({})
         expect(base_object.type).to eq(record1['type'])
         expect(base_object.name).to eq(record1['name'])
         expect(base_object.dependencies).to eq(record1['dependencies'])
@@ -70,39 +75,34 @@ module Sof
 
       it 'should return base category when no catagories are given' do
         expect(Sof::Checks).to receive(:class_from_type).with('check_mock').and_return(Sof::Checks::CheckMock).once
-        check_mocks = described_class.load([], {})
+        check_mocks = described_class.load([])
         expect_record_in_array_of_check_mocks(record1, check_mocks)
       end
 
       it 'should return only catagory cat1 without base if name overrides' do
         expect(Sof::Checks).to receive(:class_from_type).with('check_mock').and_return(Sof::Checks::CheckMock).once
-        check_mocks = described_class.load(['cat1'], {})
+        check_mocks = described_class.load(['cat1'])
         expect_record_in_array_of_check_mocks(record2, check_mocks)
       end
 
       it 'should return only catagory cat2' do
         expect(Sof::Checks).to receive(:class_from_type).with('check_mock').and_return(Sof::Checks::CheckMock).twice
-        check_mocks = described_class.load(['cat2'], {})
+        check_mocks = described_class.load(['cat2'])
         expect_record_in_array_of_check_mocks(record2, check_mocks)
         expect_record_in_array_of_check_mocks(record3, check_mocks)
       end
 
       it 'should return catogories cat1 and cat3' do
         expect(Sof::Checks).to receive(:class_from_type).with('check_mock').and_return(Sof::Checks::CheckMock).twice
-        check_mocks = described_class.load(['cat1', 'cat3'], {})
+        check_mocks = described_class.load(['cat1', 'cat3'])
         expect_record_in_array_of_check_mocks(record2, check_mocks)
         expect_record_in_array_of_check_mocks(record4, check_mocks)
       end
     end
 
     describe '#.run_check' do
-      before(:each) do
-
-      end
-      it 'should have type, name, and command accessors' do
-        expect(base_object.type).to eq(record1['type'])
-        expect(base_object.name).to eq(record1['name'])
-        expect(base_object.command).to eq(record1['command'])
+      it 'should run and return result' do
+        expect(checkmock_object.run_check(server)).to eq({"title"=>{"exit status"=>"0", "status"=>"success", "description"=>"thename1 runs thecommand1 and is a core check"}})
       end
     end
 
