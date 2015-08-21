@@ -17,7 +17,7 @@ class Local < Sof::Check
   end
 
   def run(server)
-    local_system = Sof::LocalSystem.new(echo: @options[:debug])
+    local_system = Sof::LocalSystem.new(echo: @options.debug)
     extra_fields = {}
 
    local_result = local_system.exec(command(server))
