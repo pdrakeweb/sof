@@ -1,8 +1,10 @@
 name: slow_queries
-command: bash -c 'SLOW_QUERIES=`mysql -s -e "SELECT USER, HOST, DB, COMMAND, TIME, STATE, INFO FROM INFORMATION_SCHEMA.PROCESSLIST WHERE COMMAND = \"Query\" AND Time > 30"` && echo "$SLOW_QUERIES" && test "$SLOW_QUERIES" = ""'
+command: mysql_slow_queries.sh
+path: scripts/
+expected_result: 1
 category:
   - db
-type: ssh
+type: ssh_script
 sudo: root
 dependencies:
   - ssh

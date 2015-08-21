@@ -1,0 +1,4 @@
+#!/bin/bash
+
+mysql -s -e 'SELECT USER, HOST, DB, COMMAND, TIME, STATE, INFO FROM INFORMATION_SCHEMA.PROCESSLIST WHERE COMMAND = "Query" AND Time > 30' | grep '[a-z1-9]'
+exit $?

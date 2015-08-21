@@ -1,3 +1,6 @@
+require 'net/ssh'
+require 'net/scp'
+
 module Sof
 class Ssh
 

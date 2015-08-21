@@ -1,4 +1,5 @@
 require_relative 'checks/ssh'
+require_relative 'checks/ssh_script'
 require_relative 'checks/local'
 
 module Sof::Checks
