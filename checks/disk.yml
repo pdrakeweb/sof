@@ -3,6 +3,6 @@ command: '/usr/lib/nagios/plugins/check_disk -X proc -X sysfs -X tmpfs -X devpts
 category:
   - base
 type: ssh
-sudo: root
+user: root
 dependencies:
   - ssh

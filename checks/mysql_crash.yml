@@ -4,6 +4,6 @@ expected_result: 123
 category:
   - db
 type: ssh
-sudo: root
+user: root
 dependencies:
   - ssh

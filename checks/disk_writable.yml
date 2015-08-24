@@ -3,6 +3,6 @@ command: '/usr/lib/nagios/plugins/check_disk_writable'
 category:
   - base
 type: ssh
-sudo: root
+user: root
 dependencies:
   - ssh

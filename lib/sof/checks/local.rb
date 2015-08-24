@@ -6,7 +6,7 @@ class Local < Sof::Check
 
   def initialize(check)
     super(check)
-    @sudo = check['sudo']
+    @sudo = check['user']
     @expected_result = check['expected_result'] || 0
   end
 
