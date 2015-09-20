@@ -9,6 +9,6 @@ gem 'thor'
 gem 'popen4'
 gem 'colorize'
 
-group :test, :developement do
+group :test, :development do
   gem 'rspec'
 end
