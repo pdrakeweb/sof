@@ -1,5 +1,5 @@
 name: inodes
-command: "df -i | awk '(NR>1) && ($5 > 75){ print \"Running out of inodes on: \" $1, \":\", $5, \"used\"}' | grep 'used'"
+command: "df -i | tr -d '%' | awk '(NR>1) && ($5 > 75){ print \"Running out of inodes on: \" $1, \":\", $5, \"used\"}' | grep 'used'"
 expected_result: 1
 category:
   - base
