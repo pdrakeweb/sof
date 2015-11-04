@@ -1,0 +1,10 @@
+name: mysql_slave_lag
+command: mysql_slave_lag.sh
+path: scripts/
+expected_result: 0
+category:
+  - mysql_cluster
+type: ssh_script
+user: root
+dependencies:
+  - ssh
