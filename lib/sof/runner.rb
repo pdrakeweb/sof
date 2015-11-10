@@ -84,7 +84,7 @@ class Runner
 
     failure_results.sort!{ |a,b| a.first <=> b.first }
     failure_results.each do |result|
-      puts result[0].colorize(:red)
+      puts result[0].colorize(:red) if STDOUT.isatty
       puts result[1] if result[1]
       puts result[2] if result[2]
       puts "{noformat}" if jira_format
@@ -93,7 +93,7 @@ class Runner
     if @options.verbose
       pass_results.sort!{ |a,b| a[0] <=> b[0] }
       pass_results.each do |result|
-        puts result[0].colorize(:green)
+        puts result[0].colorize(:green) if STDOUT.isatty
       end
     end
 
@@ -110,9 +110,9 @@ class Runner
     }
 
     if unhealthy_server_count == 0
-      puts munged_output.to_yaml.colorize(:green)
+      puts munged_output.to_yaml.colorize(:green) if STDOUT.isatty
     else
-      puts munged_output.to_yaml.colorize(:red)
+      puts munged_output.to_yaml.colorize(:red) if STDOUT.isatty
     end
   end
 
