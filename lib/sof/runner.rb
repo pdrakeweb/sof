@@ -49,7 +49,7 @@ class Runner
     end
   end
 
-  def output_results(verbose = false)
+  def output_results(jira_format, verbose = false)
     munged_output = {}
     server_count = unhealthy_server_count = failure_count = check_count = 0
     pass_results = []
@@ -60,12 +60,16 @@ class Runner
       single_result[:result].each do |check_result|
         check_count += 1
         failure = check_result[:return].first[1]['status'] != :pass
-        check_string = "#{check_result[:return].first[0].ljust(20)} #{single_result[:server].hostname.ljust(40)} #{check_result[:return].first[1]['status']}"
+        jira_header = "{noformat:title="
+        check_string = "#{check_result[:return].first[0].ljust(20)} \
+          on #{single_result[:server].hostname.ljust(40)} \
+          #{check_result[:return].first[1]['status']}"
 
+        result_string = jira_format ? jira_header + check_string + "}" : check_string
         if failure
           failure_count += 1
           server_has_failure = true
-          failure_content = [check_string]
+          failure_content = [result_string]
           failure_content << multiline_indent(check_result[:return].first[1]['output'].strip) if check_result[:return].first[1]['output']
           failure_content << multiline_indent(check_result[:return].first[1]['description'].strip) if check_result[:return].first[1]['description']
           failure_results << failure_content
@@ -83,6 +87,7 @@ class Runner
       puts result[0].colorize(:red)
       puts result[1] if result[1]
       puts result[2] if result[2]
+      puts "{noformat}" if jira_format
     end
 
     if @options.verbose
