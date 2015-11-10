@@ -1,5 +1,5 @@
 name: core_dumps
-command: 'find $(dirname $(cat /proc/sys/kernel/core_pattern | cut -d " " -f1)) ! -empty -mtime -7 | grep ""'
+command: 'find $(dirname $(cat /proc/sys/kernel/core_pattern | cut -d " " -f1)) ! -empty -mtime -7 -type f -printf "%AY-%Am-%Ad %AH:%AM %f\n" | grep ""'
 expected_result: 1
 category:
   - base
