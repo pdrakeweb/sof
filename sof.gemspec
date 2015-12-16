@@ -1,5 +1,6 @@
 name = "sof"
 require "./lib/#{name}"
+deps = %w(diff-lcs net-scp parallel ruby-progressbar thor popen4 colorize)
 
 Gem::Specification.new name, Sof::VERSION do |s|
   s.summary = "Check the status of a server on fire"
@@ -13,4 +14,8 @@ Gem::Specification.new name, Sof::VERSION do |s|
   s.require_paths = ["lib"]
   s.bindir = "bin"
   s.executables = Dir["bin/*"].map { |f| File.basename(f) }.select { |f| f =~ /^[\w\-]+$/ }
+
+  deps.each{|d| s.add_dependency d}
+  s.add_dependency 'net-ssh', '>=2.9.1'
+
 end
