@@ -6,6 +6,8 @@ require 'net/ssh'
 require 'net/scp'
 require 'colorize'
 
+String.disable_colorization true unless $stdout.tty?
+
 module Sof
 class Runner
 
