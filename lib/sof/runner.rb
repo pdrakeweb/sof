@@ -26,10 +26,10 @@ class Runner
     end
   end
 
-  def run_checks
+  def run_checks(opts={progress: 'Running checks'})
     @results = []
     @total_time = Benchmark.realtime do
-      @results = Parallel.map_with_index(servers, :in_processes => @options.server_concurrency, :progress => 'Running checks') do |server|
+      @results = Parallel.map_with_index(servers, :in_processes => @options.server_concurrency, :progress => opts[:progress]) do |server|
         checks = Sof::Check.load(server.categories)
         check_results = []
 
