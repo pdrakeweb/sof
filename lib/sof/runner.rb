@@ -9,11 +9,17 @@ require 'colorize'
 module Sof
   class Runner
 
-    attr_accessor :server_concurrency, :check_concurrency, :manifest, :results
+    attr_accessor :server_concurrency, :check_concurrency, :manifest, :results, :munged_output, :pass_results,
+                  :unhealthy_server_count, :failure_results
 
     def initialize(manifest)
       @manifest = manifest
       @options = Sof::Options.instance
+
+      @munged_output = munged_output
+      @pass_results = pass_results
+      @unhealthy_server_count = unhealthy_server_count
+      @failure_results = failure_results
     end
 
     def servers
@@ -50,33 +56,21 @@ module Sof
     end
 
     def output_results(jira_format, _verbose = false)
-      format_output = format_results(jira_format)
-      munged_output = format_output[:munged_output]
-      pass_results = format_output[:pass_results]
-      unhealthy_server_count = format_output[:unhealthy_server_count]
-      failure_results = format_output[:failure_results]
+      store_results! jira_format
 
-      failure_results.each do |result|
+      @failure_results.each do |result|
         puts result[0].colorize(:red)
         puts result[1] if result[1]
         puts result[2] if result[2]
         puts '{noformat}' if jira_format
       end
 
-      if @options.verbose
-        pass_results.sort! { |a, b| a[0] <=> b[0] }
-        pass_results.each { |result| puts result[0].colorize(:green) }
-      end
+      @pass_results.each { |result| puts result[0].colorize(:green) } if @options.verbose
 
-      message = if unhealthy_server_count
-                  munged_output.to_yaml.colorize(:red)
-                else
-                  munged_output.to_yaml.colorize(:green)
-                end
-      puts message
+      puts @munged_output.to_yaml.colorize(@unhealthy_server_count ? :red : :green)
     end
 
-    def format_results(jira_format = false)
+    def store_results!(jira_format = false)
       munged_output = {}
       server_count = unhealthy_server_count = failure_count = check_count = 0
       pass_results = []
@@ -109,9 +103,6 @@ module Sof
         unhealthy_server_count += 1 if server_has_failure
       end
 
-      failure_results.sort! { |a, b| a.first <=> b.first }
-
-
       munged_output['stats'] = {
           'servers' => {
               'total' => server_count,
@@ -123,10 +114,11 @@ module Sof
           },
           'time' => "#{@total_time.round}s",
       }
-      return {munged_output: munged_output,
-              pass_results: pass_results,
-              unhealthy_server_count: unhealthy_server_count,
-              failure_results: failure_results}
+
+      @munged_output = munged_output
+      @pass_results = pass_results.sort { |a, b| a[0] <=> b[0] }
+      @unhealthy_server_count = unhealthy_server_count
+      @failure_results = failure_results.sort { |a, b| a.first <=> b.first }
     end
 
     def multiline_indent(input_string)
