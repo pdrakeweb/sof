@@ -8,7 +8,7 @@ class Ssh
 
   NETWORK_EXCEPTIONS = [ Errno::EHOSTUNREACH, Errno::ETIMEDOUT, Errno::ECONNREFUSED, Errno::ECONNABORTED, Errno::ECONNRESET, Errno::EHOSTUNREACH, Errno::EPIPE, Errno::EINVAL, Timeout::Error, SocketError, EOFError, IOError ]
 
-  def initialize(server, echo)
+  def initialize(server, echo:)
     @server = server
     @ssh_options = { :port => server.port, :compression => false }
     @ssh_retries = 10
