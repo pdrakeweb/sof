@@ -1,5 +1,5 @@
 name = "sof"
-require "./lib/#{name}"
+require "./lib/#{name}/version"
 deps = %w(diff-lcs net-scp parallel ruby-progressbar thor popen4 colorize)
 
 Gem::Specification.new name, Sof::VERSION do |s|
