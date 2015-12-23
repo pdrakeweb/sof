@@ -7,5 +7,5 @@ require_relative 'sof/runner'
 require_relative 'sof/options'
 
 module Sof
-  VERSION = '0.1'
+  VERSION = '0.2'
 end
