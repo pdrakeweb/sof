@@ -26,6 +26,7 @@ module Sof
       manifest['servers'].map do |server_record|
         server_record['username'] ||= manifest['username']
         server_record['port'] ||= manifest['port']
+        server_record['keys'] ||= manifest['keys']
         Sof::Server.new(server_record)
       end
     end
@@ -78,6 +79,11 @@ module Sof
       @results.each do |single_result|
         server_has_failure = false
 
+        if single_result[:server].hostname.nil?
+          STDERR.puts "WARNING: the hostname in a sof result was nil."
+          STDERR.puts single_result
+          single_result[:server].hostname = 'UNKNOWN'
+        end
         single_result[:result].each do |check_result|
           check_count += 1
           failure = check_result[:return].first[1]['status'] != :pass
