@@ -6,6 +6,9 @@ require 'net/ssh'
 require 'net/scp'
 require 'colorize'
 
+# this should be fun.
+require 'timeout'
+
 module Sof
   class Runner
 
@@ -34,14 +37,18 @@ module Sof
     def run_checks(progress = 'Running checks')
       @results = []
       @total_time = Benchmark.realtime do
-        @results = Parallel.map_with_index(servers, :in_processes => @options.server_concurrency, :progress => progress) do |server|
+        @results = Parallel.map_with_index([servers], :in_processes => @options.server_concurrency, :progress => progress) do |server|
           checks = Sof::Check.load(server.categories)
           check_results = []
 
           ssh_check = checks.find { |check| check.name == 'ssh' }
           checks.delete(ssh_check)
 
-          ssh_check_result = {:check => ssh_check, :return => ssh_check.run_check(server)}
+          # this might death spiral. who knows!
+          ssh_check_result = Timeout::timeout(10) do 
+            {:check => ssh_check, :return => ssh_check.run_check(server)}
+          end
+
           check_results << ssh_check_result
 
           if ssh_check_result[:return].first[1]['status'] != :pass

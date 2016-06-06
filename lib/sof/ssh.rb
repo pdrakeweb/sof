@@ -10,7 +10,7 @@ class Ssh
 
   def initialize(server, echo:)
     @server = server
-    @ssh_options = { :port => server.port, :compression => false, :keys => server.keys }
+    @ssh_options = { :port => server.port, :compression => false, :keys => server.keys, :timeout => server.timeout }
     @ssh_retries = 10
     @echo = echo
   end
