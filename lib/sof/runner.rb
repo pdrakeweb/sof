@@ -9,6 +9,8 @@ require 'colorize'
 # this should be fun.
 require 'timeout'
 
+require 'pry'
+
 module Sof
   class Runner
 
@@ -37,7 +39,7 @@ module Sof
     def run_checks(progress = 'Running checks')
       @results = []
       @total_time = Benchmark.realtime do
-        @results = Parallel.map_with_index([servers], :in_processes => @options.server_concurrency, :progress => progress) do |server|
+        @results = Parallel.map_with_index(servers, :in_processes => 1, :progress => progress) do |server|
           checks = Sof::Check.load(server.categories)
           check_results = []
 
@@ -45,9 +47,21 @@ module Sof
           checks.delete(ssh_check)
 
           # this might death spiral. who knows!
-          ssh_check_result = Timeout::timeout(10) do 
-            {:check => ssh_check, :return => ssh_check.run_check(server)}
+          STDERR.puts "sshing into a thing"
+          begin
+            %x(touch /tmp/solowag)
+            ssh_check_result = Timeout::timeout(10) do
+              {:check => ssh_check, :return => ssh_check.run_check(server)}
+            end
+          rescue Timeout::Error
+            %x(touch /tmp/yoloswag)
+            STDERR.puts "Thread took too long"
+            ssh_check_result = {:check => ssh_check, :return => 'failure: timeout'}
+          rescue Exception => e
+            binding.pry
           end
+
+          binding.pry
 
           check_results << ssh_check_result
 
