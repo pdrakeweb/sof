@@ -15,7 +15,7 @@ module Sof
   class Runner
 
     attr_accessor :server_concurrency, :check_concurrency, :manifest, :results, :munged_output, :pass_results,
-                  :unhealthy_server_count, :failure_results
+                  :unhealthy_server_count, :failure_results, :pids
 
     def initialize(manifest)
       @manifest = manifest
@@ -25,6 +25,7 @@ module Sof
       @pass_results = pass_results
       @unhealthy_server_count = unhealthy_server_count
       @failure_results = failure_results
+      @pids = []
     end
 
     def servers
@@ -40,28 +41,14 @@ module Sof
       @results = []
       @total_time = Benchmark.realtime do
         @results = Parallel.map_with_index(servers, :in_processes => 1, :progress => progress) do |server|
+          @pids << Process.pid
           checks = Sof::Check.load(server.categories)
           check_results = []
 
           ssh_check = checks.find { |check| check.name == 'ssh' }
           checks.delete(ssh_check)
 
-          # this might death spiral. who knows!
-          STDERR.puts "sshing into a thing"
-          begin
-            %x(touch /tmp/solowag)
-            ssh_check_result = Timeout::timeout(10) do
-              {:check => ssh_check, :return => ssh_check.run_check(server)}
-            end
-          rescue Timeout::Error
-            %x(touch /tmp/yoloswag)
-            STDERR.puts "Thread took too long"
-            ssh_check_result = {:check => ssh_check, :return => 'failure: timeout'}
-          rescue Exception => e
-            binding.pry
-          end
-
-          binding.pry
+          ssh_check_result = { :check => ssh_check, :return => ssh_check.run_check(server) }
 
           check_results << ssh_check_result
 
@@ -72,6 +59,8 @@ module Sof
           check_results += Parallel.map_with_index(checks, :in_threads => @options.check_concurrency) do |check|
             {:check => check, :return => check.run_check(server)}
           end
+
+          @pids.delete Process.pid
           {:server => server, :result => check_results}
         end
       end
