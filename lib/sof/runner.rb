@@ -6,8 +6,6 @@ require 'net/ssh'
 require 'net/scp'
 require 'colorize'
 
-require 'timeout'
-
 module Sof
   class Runner
 
@@ -37,7 +35,7 @@ module Sof
     def run_checks(progress = 'Running checks')
       @results = []
       @total_time = Benchmark.realtime do
-        @results = Parallel.map_with_index(servers, :in_processes => 1, :progress => progress) do |server|
+        @results = Parallel.map_with_index(servers, :in_processes => @options.server_concurrency, :progress => progress) do |server|
           @pids << Process.pid
           checks = Sof::Check.load(server.categories)
           check_results = []
