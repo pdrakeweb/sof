@@ -6,10 +6,7 @@ require 'net/ssh'
 require 'net/scp'
 require 'colorize'
 
-# this should be fun.
 require 'timeout'
-
-require 'pry'
 
 module Sof
   class Runner
