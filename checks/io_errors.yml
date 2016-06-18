@@ -1,0 +1,9 @@
+name: io_error
+command: 'grep "I/O error" /var/log/kern.log'
+expected_result: 1
+category:
+  - base
+type: ssh
+user: root
+dependencies:
+  - ssh
