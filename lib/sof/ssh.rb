@@ -11,11 +11,8 @@ class Ssh
   def initialize(server, echo:)
     @server = server
 
-    @ssh_options = if server.respond_to? :timeout
-                     { :port => server.port, :compression => false, :keys => server.keys, :timeout => server.timeout}
-                   else
-                     { :port => server.port, :compression => false, :keys => server.keys }
-                   end
+    @ssh_options = { :port => server.port, :compression => false, :keys => server.keys }
+    @ssh_options[:timeout] = server.timeout if server.respond_to? :timeout
 
     @ssh_retries = 10
     @echo = echo
