@@ -10,7 +10,7 @@ module Sof
   class Runner
 
     attr_accessor :server_concurrency, :check_concurrency, :manifest, :results, :munged_output, :pass_results,
-                  :unhealthy_server_count, :failure_results
+                  :unhealthy_server_count, :failure_results, :pids
 
     def initialize(manifest)
       @manifest = manifest
@@ -20,6 +20,7 @@ module Sof
       @pass_results = pass_results
       @unhealthy_server_count = unhealthy_server_count
       @failure_results = failure_results
+      @pids = []
     end
 
     def servers
@@ -35,13 +36,15 @@ module Sof
       @results = []
       @total_time = Benchmark.realtime do
         @results = Parallel.map_with_index(servers, :in_processes => @options.server_concurrency, :progress => progress) do |server|
+          @pids << Process.pid
           checks = Sof::Check.load(server.categories)
           check_results = []
 
           ssh_check = checks.find { |check| check.name == 'ssh' }
           checks.delete(ssh_check)
 
-          ssh_check_result = {:check => ssh_check, :return => ssh_check.run_check(server)}
+          ssh_check_result = { :check => ssh_check, :return => ssh_check.run_check(server) }
+
           check_results << ssh_check_result
 
           if ssh_check_result[:return].first[1]['status'] != :pass
@@ -51,6 +54,8 @@ module Sof
           check_results += Parallel.map_with_index(checks, :in_threads => @options.check_concurrency) do |check|
             {:check => check, :return => check.run_check(server)}
           end
+
+          @pids.delete Process.pid
           {:server => server, :result => check_results}
         end
       end
