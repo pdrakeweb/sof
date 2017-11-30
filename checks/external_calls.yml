@@ -1,5 +1,5 @@
 name: php_external_calls
-command: 'sudo lsof -a -iTCP -sTCP:ESTABLISHED -cphp -P -Fn | grep -v -E "^p|:3306\$|:11211\$|^f[0-9]{1,2}\$\"'
+command: 'sudo lsof -a -iTCP -cphp -P -Fn | grep -v -E "^p|:3306\$|:11211\$|^f[0-9]{1,2}\$"'
 expected_result: 1
 category:
   - web
