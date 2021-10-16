@@ -1,0 +1,5 @@
+servers:
+  - name: localhost
+    categories:
+      - test
+port: 22

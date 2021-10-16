@@ -1,6 +1,9 @@
 name: ssh
-command: '/bin/true'
+command: '/bin/true || /usr/bin/true'
 category:
+  - test
   - base
 type: ssh
 timeout: 15
+dependencies:
+  - ssh_port

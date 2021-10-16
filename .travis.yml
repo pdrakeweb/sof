@@ -11,8 +11,8 @@ rvm:
 install: bundle install --path vendor/bundle/
 
 script:
-  # Run all specs.
-  - "bundle exec rspec"
+  # Run unit test specs.
+  - "bundle exec rake spec:unit"
 
 matrix:
   allow_failures:

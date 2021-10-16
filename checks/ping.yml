@@ -1,6 +1,7 @@
 name: ping
 command: 'ping -c1 <%= hostname %>'
 category:
+  - test
   - base
 type: local
 timeout: 5
