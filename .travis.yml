@@ -4,7 +4,7 @@ cache: bundler
 # travis tests. It should result in faster test vm load times.
 sudo: false
 rvm:
-  - "2.1.6"
+  - "2.7"
   - ruby-head
 
 
