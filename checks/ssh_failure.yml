@@ -1,0 +1,9 @@
+name: ssh failure
+command: '/bin/false || /usr/bin/false'
+category:
+  - test_failure
+type: ssh
+timeout: 15
+description: Intentionally fail after establishing an SSH connection.
+dependencies:
+  - ssh

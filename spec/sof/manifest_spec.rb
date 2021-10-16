@@ -2,7 +2,7 @@ require 'yaml'
 require_relative '../../lib/sof/manifest'
 
 module Sof
-  describe Manifest do
+  describe Manifest, type: :unit do
     before(:each) do
       @manifest = {
         'port' => 22,

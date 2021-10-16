@@ -1,0 +1,8 @@
+name: ssh port open
+command: 'nc <%= hostname %> 22 -w 1'
+category:
+  - test
+  - base
+type: local
+timeout: 10
+description: Check if the SSH port is open to traffic.

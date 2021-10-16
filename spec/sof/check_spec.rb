@@ -5,7 +5,7 @@ require_relative '../../lib/sof/server'
 require_relative 'mocks/check_mock'
 
 module Sof
-  describe Check do
+  describe Check, type: :unit do
 
     let(:record1) {{
       'type' => 'check_mock',

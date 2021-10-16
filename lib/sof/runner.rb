@@ -37,18 +37,19 @@ module Sof
       @total_time = Benchmark.realtime do
         @results = Parallel.map_with_index(servers, :in_processes => @options.server_concurrency, :progress => progress) do |server|
           @pids << Process.pid
-          checks = Sof::Check.load(server.categories)
+          checks = Sof::Check.load(server.categories, include_base: @options.include_base)
           check_results = []
 
-          ssh_check = checks.find { |check| check.name == 'ssh' }
-          checks.delete(ssh_check)
+          # Process the SSH check first if that is one of the checks to run.  Remove all dependent checks if it fails.
+          if ssh_check = checks.find { |check| check.name == 'ssh' }
+            checks.delete(ssh_check)
 
-          ssh_check_result = { :check => ssh_check, :return => ssh_check.run_check(server) }
+            ssh_check_result = { :check => ssh_check, :return => ssh_check.run_check(server) } if ssh_check
+            check_results << ssh_check_result
 
-          check_results << ssh_check_result
-
-          if ssh_check_result[:return].first[1]['status'] != :pass
-            checks.select! { |check| check.dependencies.nil? || !check.dependencies.include?('ssh') }
+            if ssh_check_result[:return].first[1]['status'] != :pass
+              checks.select! { |check| check.dependencies.nil? || !check.dependencies.include?('ssh') }
+            end
           end
 
           check_results += Parallel.map_with_index(checks, :in_threads => @options.check_concurrency) do |check|
@@ -56,9 +57,14 @@ module Sof
           end
 
           @pids.delete Process.pid
+
           {:server => server, :result => check_results}
         end
       end
+    end
+
+    def has_failures?
+      !@failure_results.empty?
     end
 
     def output_results(jira_format, _verbose = false)

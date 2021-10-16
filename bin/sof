@@ -17,6 +17,7 @@ class SofCommand < Thor
   method_option :server_concurrency, required: false, default: 10, type: :numeric, aliases: '-s', desc: 'The number of servers to concurrently check'
   method_option :check_concurrency, required: false, default: 5, type: :numeric, aliases: '-c', desc: 'The number of concurrent checks to run per server'
   method_option :jira_format, required: false, default: false, type: :boolean, aliases: '-j', desc: 'Output failure results in JIRA noformat blocks'
+  method_option :include_base, required: false, default: true, type: :boolean, aliases: '-b', desc: 'Include the base checks'
   desc 'check-server', 'Takes a list of servers (ADDRESS:TYPE) and a SSH port to check if they are on fire'
   def check_server
     if options[:manifest].nil?
@@ -29,8 +30,9 @@ class SofCommand < Thor
     sof.run_checks
     sof.output_results(options[:jira_format])
     sof.log_results if options[:log]
-    rescue Sof::ManifestError => e
-      raise Thor::Error, e.message
+    exit Sof::FAILURE_EXIT_CODE if sof.has_failures?
+  rescue Sof::ManifestError => e
+    raise Thor::Error, e.message
   end
 
   private

@@ -1,9 +1,20 @@
 require 'bundler/setup'
 
-task :default => [:spec]
-
 begin
   require 'rspec/core/rake_task'
-  RSpec::Core::RakeTask.new(:spec)
+  task :default => ['spec:all']
+
+  namespace 'spec' do
+    RSpec::Core::RakeTask.new(:unit) do |t|
+      t.rspec_opts = "--tag type:unit"
+    end
+
+    RSpec::Core::RakeTask.new(:system) do |t|
+      t.rspec_opts = "--tag type:system"
+    end
+
+    RSpec::Core::RakeTask.new(:all)
+  end
 rescue LoadError
+  # No rspec available.  The gem has been installed without development dependencies.
 end
