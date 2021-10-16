@@ -1,4 +1,5 @@
 require 'yaml'
+require 'timeout'
 
 module Sof
   class Check
