@@ -43,6 +43,7 @@ To run the tests, use rake (or rspec).
         rake spec:unit
 
         # System tests only
+        # Requires SSH agent that allows localhost SSH
         rake spec:system
 
 ### Using rspec directly
