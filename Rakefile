@@ -6,11 +6,11 @@ begin
 
   namespace 'spec' do
     RSpec::Core::RakeTask.new(:unit) do |t|
-      t.rspec_opts = "--tag type:unit"
+      t.rspec_opts = "--tag type:unit --format documentation"
     end
 
     RSpec::Core::RakeTask.new(:system) do |t|
-      t.rspec_opts = "--tag type:system"
+      t.rspec_opts = "--tag type:system --format documentation"
     end
 
     RSpec::Core::RakeTask.new(:all)
